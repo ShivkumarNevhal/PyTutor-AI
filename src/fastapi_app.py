@@ -49,13 +49,12 @@ st.markdown(f"""
 /* ---------------- Hero ---------------- */
 
 .hero{{
-    background: rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.45);
     backdrop-filter: blur(12px);
     padding:40px;
     border-radius:25px;
-    color:white;
     text-align:center;
-    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }}
 
 .hero h1{{
