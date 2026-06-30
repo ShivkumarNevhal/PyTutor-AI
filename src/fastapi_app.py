@@ -48,6 +48,115 @@ def load_models():
 
 retriever, llm = load_models()
 
+# -------------------- Custom CSS --------------------
+st.markdown("""
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+html, body, [class*="css"]{
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Hide Streamlit Branding */
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
+
+/* Background */
+.stApp{
+    background: linear-gradient(135deg,#eef2ff,#ffffff,#e0f2fe);
+    background-attachment: fixed;
+}
+
+/* Hero */
+.hero{
+    background: linear-gradient(135deg,#4F46E5,#06B6D4);
+    padding:40px;
+    border-radius:25px;
+    color:white;
+    text-align:center;
+    margin-bottom:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+
+.hero h1{
+    font-size:52px;
+    margin-bottom:10px;
+}
+
+.hero p{
+    font-size:18px;
+    opacity:.95;
+}
+
+/* Dashboard Cards */
+.card{
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(15px);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    transition:.3s;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.4);
+}
+
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
+
+/* Welcome Card */
+.welcome{
+    background:white;
+    border-radius:20px;
+    padding:30px;
+    border-left:8px solid #4F46E5;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"]{
+    background:#111827;
+}
+
+section[data-testid="stSidebar"] *{
+    color:white;
+}
+
+/* Buttons */
+.stButton>button{
+    width:100%;
+    border-radius:15px;
+    background:#4F46E5;
+    color:white;
+    border:none;
+    height:45px;
+    font-weight:600;
+}
+
+.stButton>button:hover{
+    background:#4338CA;
+}
+
+/* Chat */
+.stChatMessage{
+    border-radius:20px;
+    padding:12px;
+}
+
+/* Footer */
+.footer{
+    text-align:center;
+    color:#6B7280;
+    margin-top:40px;
+    padding:15px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # -------------------- Sidebar --------------------
 with st.sidebar:
     st.title("🐍 PyTutor AI")
