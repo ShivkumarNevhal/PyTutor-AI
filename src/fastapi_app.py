@@ -462,7 +462,7 @@ with st.chat_message("assistant", avatar="🐍"):
         f"⚡ Response generated in **{end_time-start_time:.2f} seconds**"
     )
 
- st.session_state.messages.append(
+    st.session_state.messages.append(
     {
         "role": "assistant",
         "content": answer
