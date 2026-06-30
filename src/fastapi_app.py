@@ -30,28 +30,8 @@ bg_image = get_base64_image("assets/why-python-for-ai-web-development.webp")
 st.markdown(f"""
 <style>
 
-.hero{
-    background: linear-gradient(135deg,#4F46E5,#06B6D4);
-    padding:40px;
-    border-radius:25px;
-    color:white;
-    text-align:center;
-}
+/* ---------------- Background ---------------- */
 
-.hero h1{
-    font-size:52px;
-    font-weight:700;
-    color:#FFD43B;
-    text-shadow:2px 2px 8px rgba(0,0,0,0.4);
-}
-
-.hero h3{
-    color:white;
-}
-
-.hero p{
-    color:white;
-}
 .stApp {{
     background:
         linear-gradient(
@@ -62,7 +42,35 @@ st.markdown(f"""
 
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     background-attachment: fixed;
+}}
+
+/* ---------------- Hero ---------------- */
+
+.hero{{
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(12px);
+    padding:40px;
+    border-radius:25px;
+    color:white;
+    text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+}}
+
+.hero h1{{
+    font-size:52px;
+    font-weight:700;
+    color:#FFD43B;
+    text-shadow:2px 2px 8px rgba(0,0,0,0.4);
+}}
+
+.hero h3{{
+    color:#E5E7EB;
+}}
+
+.hero p{{
+    color:#F3F4F6;
 }}
 
 </style>
