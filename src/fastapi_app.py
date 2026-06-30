@@ -22,6 +22,32 @@ groq_api_key = st.secrets["GROQ_API_KEY"]
 if not groq_api_key:
     st.error("GROQ_API_KEY not found in .env file")
     st.stop()
+# -------------------- Load Models --------------------
+@st.cache_resource
+def load_models():
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+    db = Chroma(
+        persist_directory="./chroma_db",
+        embedding_function=embeddings
+    )
+
+    retriever = db.as_retriever(search_type="similarity")
+
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=groq_api_key,
+        temperature=0.2,
+        max_tokens=1024
+    )
+
+    return retriever, llm
+
+
+retriever, llm = load_models()
+
 #-----------------------css--------------------------------
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
@@ -74,31 +100,6 @@ st.markdown(f"""
 
 </style>
 """, unsafe_allow_html=True)
-# -------------------- Load Models --------------------
-@st.cache_resource
-def load_models():
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-
-    db = Chroma(
-        persist_directory="./chroma_db",
-        embedding_function=embeddings
-    )
-
-    retriever = db.as_retriever(search_type="similarity")
-
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        api_key=groq_api_key,
-        temperature=0.2,
-        max_tokens=1024
-    )
-
-    return retriever, llm
-
-
-retriever, llm = load_models()
 
 # -------------------- Sidebar --------------------
 with st.sidebar:
