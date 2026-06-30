@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import streamlit as st
-
+import base64
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
@@ -21,7 +21,26 @@ groq_api_key = st.secrets["GROQ_API_KEY"]
 if not groq_api_key:
     st.error("GROQ_API_KEY not found in .env file")
     st.stop()
+bg_image = get_base64_image("https://www.qodequay.com/wp-content/uploads/2025/08/why-python-for-ai-web-development.webp")
+#-----------------------css--------------------------------
+st.markdown(f"""
+<style>
 
+.stApp {{
+    background:
+        linear-gradient(
+            rgba(10,15,30,0.82),
+            rgba(10,15,30,0.82)
+        ),
+        url("data:image/jpg;base64,{bg_image}");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}}
+
+</style>
+""", unsafe_allow_html=True)
 # -------------------- Load Models --------------------
 @st.cache_resource
 def load_models():
