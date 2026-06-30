@@ -394,9 +394,9 @@ if prompt := st.chat_input("Ask a Python question..."):
     # docs = retriever.invoke(prompt)
     with st.status("Retrieving relevant documents...", expanded=False) as status:
 
-    docs = retriever.invoke(prompt)
+     docs = retriever.invoke(prompt)
 
-    status.update(
+     status.update(
         label="Knowledge Retrieved ✅",
         state="complete"
     )
