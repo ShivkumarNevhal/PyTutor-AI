@@ -65,11 +65,11 @@ st.markdown(f"""
 }}
 
 .hero h3{{
-    color:#E5E7EB;
+    color:#2D2D2D;
 }}
 
 .hero p{{
-    color:#F3F4F6;
+    color:#3F3F46;
 }}
 
 </style>
