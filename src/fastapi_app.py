@@ -1,71 +1,70 @@
+import os
+from dotenv import load_dotenv
 import streamlit as st
-import requests
-import time
 
-# ---------------------- PAGE CONFIG ----------------------
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
+from langchain_groq import ChatGroq
+
+# -------------------- Page Config --------------------
 st.set_page_config(
     page_title="PyTutor AI",
     page_icon="🐍",
     layout="wide"
 )
 
-# ---------------------- CUSTOM CSS ----------------------
-st.markdown("""
-<style>
-.main {
-    padding-top: 1rem;
-}
+# -------------------- Load Environment --------------------
+load_dotenv()
 
-.stChatMessage {
-    border-radius: 15px;
-}
+groq_api_key = st.secrets["GROQ_API_KEY"]
 
-h1 {
-    color: #2E8B57;
-}
+if not groq_api_key:
+    st.error("GROQ_API_KEY not found in .env file")
+    st.stop()
 
-.footer {
-    text-align:center;
-    color:gray;
-    margin-top:30px;
-}
-</style>
-""", unsafe_allow_html=True)
+# -------------------- Load Models --------------------
+@st.cache_resource
+def load_models():
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
-# ---------------------- SIDEBAR ----------------------
+    db = Chroma(
+        persist_directory="./chroma_db",
+        embedding_function=embeddings
+    )
+
+    retriever = db.as_retriever(search_type="similarity")
+
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=groq_api_key,
+        temperature=0.2,
+        max_tokens=1024
+    )
+
+    return retriever, llm
+
+
+retriever, llm = load_models()
+
+# -------------------- Sidebar --------------------
 with st.sidebar:
-
-    st.title("📚 PyTutor AI")
-
-    st.markdown("---")
-
-    st.subheader("Knowledge Base")
-    st.success("Official Python Tutorial")
-
-    st.subheader("LLM")
-    st.info("Llama 3.3 70B Versatile")
-
-    st.subheader("Embedding Model")
-    st.info("all-MiniLM-L6-v2")
-
-    st.subheader("Vector Database")
-    st.info("ChromaDB")
-
-    st.subheader("Framework")
-    st.info("FastAPI + LangChain")
+    st.title("🐍 PyTutor AI")
 
     st.markdown("---")
 
-    st.subheader("💡 Example Questions")
+    st.markdown("### 📚 Knowledge Base")
+    st.write("Official Python Tutorial")
 
-    st.markdown("""
-- What is Python?
-- Explain inheritance.
-- Define class.
-- What is polymorphism?
-- Explain list.
-- What is exception handling?
-""")
+    st.markdown("### 🤖 LLM")
+    st.write("Llama 3.3 70B (Groq)")
+
+    st.markdown("### 🔍 Embeddings")
+    st.write("all-MiniLM-L6-v2")
+
+    st.markdown("### 🗂 Vector Store")
+    st.write("ChromaDB")
 
     st.markdown("---")
 
@@ -73,99 +72,92 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-# ---------------------- TITLE ----------------------
-
+# -------------------- Title --------------------
 st.title("🐍 PyTutor AI")
+st.caption("Python RAG Assistant powered by LangChain + ChromaDB + Groq")
 
-st.caption(
-    "Your Python RAG Assistant powered by LangChain, ChromaDB and Groq"
-)
-
-st.write(
-    "Ask questions about Python using the **Official Python Tutorial**."
-)
-
-# ---------------------- SESSION ----------------------
-
+# -------------------- Chat History --------------------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ---------------------- DISPLAY CHAT ----------------------
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-for msg in st.session_state.messages:
-
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
-
-# ---------------------- USER INPUT ----------------------
-
-question = st.chat_input("Ask your Python question...")
-
-if question:
+# -------------------- User Input --------------------
+if prompt := st.chat_input("Ask a Python question..."):
 
     st.session_state.messages.append(
         {
             "role": "user",
-            "content": question
+            "content": prompt
         }
     )
 
     with st.chat_message("user"):
-        st.markdown(question)
+        st.markdown(prompt)
+
+    # Build conversation history
+    history_text = ""
+
+    for msg in st.session_state.messages[:-1]:
+        history_text += f'{msg["role"]}: {msg["content"]}\n'
+
+    # Retrieve context
+    docs = retriever.invoke(prompt)
+    context = "\n\n".join(doc.page_content for doc in docs)
+
+    final_prompt = f"""
+You are a Python Programming Assistant.
+
+Strict Rules (Highest Priority):
+
+1. Answer ONLY questions related to Python programming.
+2. Use ONLY the provided context to answer.
+3. Before answering, determine whether the user's question is about Python.
+4. If the question is NOT about Python (for example: SQL, MySQL, Oracle, DDL, DML, DBMS, Java, C, C++, HTML, CSS, JavaScript, Networking, Operating Systems, Machine Learning, or any other subject), DO NOT answer it.
+5. For every non-Python question, reply EXACTLY:
+
+Please ask questions related to Python only
+
+6. Even if the provided context contains information about SQL, databases, DDL, DML, or any non-Python topic, NEVER use that information.
+7. Ignore any retrieved document that is not about Python.
+8. Do not guess or use outside knowledge.
+
+Answer Style:
+- Use simple, beginner-friendly language.
+- Organize the answer using bullets or short paragraphs.
+- If definitions exist in the context, explain them simply.
+- Use examples from the context when available.
+- Use conversation history for follow-up questions.
+
+If the answer is not found in the Python-related context, reply EXACTLY:
+
+I couldn't find the answer in the provided documents.
+
+Conversation History:
+{history_text}
+
+Context:
+{context}
+
+Question:
+{prompt}
+
+Answer:
+"""
 
     with st.chat_message("assistant"):
-
-        start = time.time()
-
         with st.spinner("Thinking..."):
+            response = llm.invoke(final_prompt)
 
-            try:
+            answer = response.content
 
-                response = requests.post(
-                    "http://127.0.0.1:8000/predict",
-                    json={
-                       "query": question,
-                       "history": st.session_state.messages
-                     }
-                )
+            st.markdown(answer)
 
-                end = time.time()
-
-                if response.status_code == 200:
-
-                    answer = response.json()["answer"]
-
-                    st.markdown(answer)
-
-                    st.caption(
-                        f"⏱ Response Time: {end-start:.2f} sec"
-                    )
-
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": answer
-                        }
-                    )
-
-                else:
-
-                    st.error(
-                        response.json()["detail"]
-                    )
-
-            except Exception:
-
-                st.error(
-                    "❌ Unable to connect to the FastAPI backend.\n\n"
-                    "Please make sure your API server is running."
-                )
-
-# ---------------------- FOOTER ----------------------
-
-st.markdown("---")
-
-st.markdown(
-    "<div class='footer'>🚀 Built with FastAPI • LangChain • ChromaDB • Groq • Streamlit</div>",
-    unsafe_allow_html=True
-)
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": answer
+        }
+    )
