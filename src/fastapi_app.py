@@ -21,8 +21,11 @@ groq_api_key = st.secrets["GROQ_API_KEY"]
 if not groq_api_key:
     st.error("GROQ_API_KEY not found in .env file")
     st.stop()
-bg_image = get_base64_image("https://www.qodequay.com/wp-content/uploads/2025/08/why-python-for-ai-web-development.webp")
 #-----------------------css--------------------------------
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+bg_image = get_base64_image("assets/why-python-for-ai-web-development.webp")
 st.markdown(f"""
 <style>
 
