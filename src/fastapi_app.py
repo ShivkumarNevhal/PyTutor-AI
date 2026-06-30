@@ -13,6 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
+
 # -------------------- Load Environment --------------------
 load_dotenv()
 
@@ -29,6 +30,28 @@ bg_image = get_base64_image("assets/why-python-for-ai-web-development.webp")
 st.markdown(f"""
 <style>
 
+.hero{
+    background: linear-gradient(135deg,#4F46E5,#06B6D4);
+    padding:40px;
+    border-radius:25px;
+    color:white;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:52px;
+    font-weight:700;
+    color:#FFD43B;
+    text-shadow:2px 2px 8px rgba(0,0,0,0.4);
+}
+
+.hero h3{
+    color:white;
+}
+
+.hero p{
+    color:white;
+}
 .stApp {{
     background:
         linear-gradient(
