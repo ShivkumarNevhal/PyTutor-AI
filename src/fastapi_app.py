@@ -37,7 +37,8 @@ def load_models():
     retriever = db.as_retriever(search_type="similarity")
 
     llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
+        # model="llama-3.3-70b-versatile",  ----- old model which is expired 
+        model="openai/gpt-oss-120b",
         api_key=groq_api_key,
         temperature=0.2,
         max_tokens=1024
