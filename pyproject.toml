@@ -1,0 +1,2 @@
+[tool.vercel]
+entrypoint = "src.fast_api_backend:app"
