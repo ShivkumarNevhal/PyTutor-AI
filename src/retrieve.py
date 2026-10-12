@@ -1,10 +1,10 @@
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
 import os 
 from langchain_groq import ChatGroq
 
-embeddings=HuggingFaceEmbeddings(
+embeddings=FastEmbedEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 

@@ -4,7 +4,7 @@ import asyncio
 from typing import List, Dict, Any, Optional, AsyncGenerator
 from concurrent.futures import ThreadPoolExecutor
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
 
@@ -33,8 +33,8 @@ class EnterpriseRAGEngine:
         if self.is_initialized:
             return
 
-        # 1. Initialize HuggingFace embeddings
-        self.embeddings = HuggingFaceEmbeddings(
+        # 1. Initialize lightweight FastEmbed embeddings (ONNX-based, uses ~120MB RAM)
+        self.embeddings = FastEmbedEmbeddings(
             model_name=settings.EMBEDDING_MODEL
         )
 

@@ -13,11 +13,9 @@ langchain-groq>=0.1.0
 langchain-chroma>=0.1.0
 langchain-text-splitters>=0.0.1
 
-# Vector Store & Embeddings
+# Vector Store & Embeddings (Lightweight ONNX, <150MB RAM)
 chromadb>=0.4.24
-sentence-transformers>=2.6.0
-transformers>=4.39.0
-torch>=2.2.0
+fastembed>=0.2.0
 
 # Document Processing & Utilities
 pypdf>=4.1.0
